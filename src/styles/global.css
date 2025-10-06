@@ -1,7 +1,4 @@
 body {
-  font-family: var(--font-family);
-}
-
-h1 {
-  color: var(--primary);
+  background-color: rgb(38, 60, 119);
+  margin: 0;
 }
