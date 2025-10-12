@@ -1,13 +1,11 @@
-import React, { useState } from "react";
-import DatePicker from "react-datepicker";
-import { addDays } from "date-fns";
-import { TextField } from "@mui/material";
+import DatePicker from 'react-datepicker';
+import { addDays } from 'date-fns';
+import { TextField, InputLabel } from '@mui/material';
+import { DatePickerContainer } from './styles';
 
-import "react-datepicker/dist/react-datepicker.css";
+import 'react-datepicker/dist/react-datepicker.css';
 
-export default function DatePickerComponent() {
-  const [startDate, setStartDate] = useState(new Date());
-
+export default function DatePickerComponent({ ...props }) {
   type TExcludeDate =
     | {
         date: Date;
@@ -17,19 +15,20 @@ export default function DatePickerComponent() {
 
   const excludeDates: TExcludeDate = [
     addDays(new Date(), 1),
-    addDays(new Date(), 5),
+    addDays(new Date(), 5)
   ];
 
   return (
-    <DatePicker
-      dateFormat="dd/MM/yyyy"
-      selected={startDate}
-      onChange={(date: Date | null) => {
-        if (date) setStartDate(date);
-      }}
-      minDate={new Date()}
-      excludeDates={excludeDates}
-      customInput={<TextField className="input-area" size="small" />}
-    />
+    <DatePickerContainer>
+      <InputLabel className="input-label">Data</InputLabel>
+      <DatePicker
+        dateFormat="dd/MM/yyyy"
+        selected={props.selected}
+        onChange={props.onChange}
+        minDate={new Date()}
+        excludeDates={excludeDates}
+        customInput={<TextField size="small" />}
+      />
+    </DatePickerContainer>
   );
 }

@@ -1,4 +1,9 @@
 body {
+  display: flex;
+  justify-content: center;
   background-color: rgb(38, 60, 119);
   margin: 0;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
+    Arial, sans-serif;
 }

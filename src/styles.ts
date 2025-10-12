@@ -1,58 +1,34 @@
-import Styled from "styled-components";
+import Styled from 'styled-components';
 
 export const Container = Styled.div`
+  display: flex;
+  flex-direction: column;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
   background-color: #f6f7f9ff;
-  max-width: 1100px;
-  min-height: 900px;
-  margin: 0 auto;
-  justify-content: center;
-
-  .form-container {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    width: 500px;
-  }
-
-  .input-label {
-    font-size: 12px;
-    font-weight: 600;
-  }
-
-  .input-area {
-    width: 100%;
-    background-color: #ffffff;
-  }
-`;
-
-export const FormContainer = Styled.div`
-  display: flex;
-  justify-content: center;
+  min-width: 80vh;
+  min-height: 100vh;
   align-items: center;
-  margin-top: 20px;
-  margin-bottom: 20px;
-
-  .date-time-container {
-    display: flex;
-    gap: 20px;
-    align-items: center;
-    flex-direction: row;
-  }
-
-  .date-time-position {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .time-input-area {
-    width: 260px;
-  }
 `;
 
 export const Header = Styled.header`
+  display: flex;
+  margin-top: 0;
+  align-items: center;
+  justify-content: center;
+  
+  height: 100px;
+  width: 100%;
+
+  font-weight: 600;
+  background-color: #e5eeffff;
+
   .logo {
     height: 130px;
+  }
+
+  .menu-container {
+    display: flex;
+    gap: 16px;
   }
 
   .menu {
@@ -62,16 +38,17 @@ export const Header = Styled.header`
     &:hover {
       color: #ff6347;
     }
+    text-decoration: none;
   }
 
-  background-color: #e5eeffff;
-  margin-top: 0;
-  height: 100px;
-  max-width: 1100px;
-  display: flex;
-  align-items: center;
+`;
+
+export const Footer = Styled.footer`
+  font-size: 11px;
+  font-weight: 500;
+
+  margin-top: auto;
+  bottom: 0;
   justify-content: center;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  font-weight: 600;
-  gap: 16px
+  align-items: center;
 `;
