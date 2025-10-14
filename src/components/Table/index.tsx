@@ -1,5 +1,5 @@
-import React from "react";
-import { StyledTableContainer } from "./styles";
+import { useState } from 'react';
+import { StyledTableContainer } from './styles';
 import {
   Table,
   TableBody,
@@ -7,7 +7,8 @@ import {
   TableHead,
   TableRow,
   Paper,
-} from "@mui/material";
+  TablePagination
+} from '@mui/material';
 
 function createData(
   name: string,
@@ -27,81 +28,93 @@ function createData(
     furSize,
     race,
     furIsTangled,
-    time,
+    time
   };
 }
 
 const rows = [
   createData(
-    "Amora",
-    "Banho e Tosa",
-    "Cachorro",
-    "Médio",
-    "Curto",
-    "Vira-lata",
+    'Amora',
+    'Banho e Tosa',
+    'Cachorro',
+    'Médio',
+    'Curto',
+    'Vira-lata',
     false,
-    "12h00"
+    '12h00'
   ),
   createData(
-    "Nina",
-    "Banho e Tosa",
-    "Cachorro",
-    "Pequeno",
-    "Curto",
-    "Vira-lata",
+    'Nina',
+    'Banho e Tosa',
+    'Cachorro',
+    'Pequeno',
+    'Curto',
+    'Vira-lata',
     false,
-    "12h00"
+    '12h00'
   ),
   createData(
-    "Luna",
-    "Banho e Tosa",
-    "Cachorro",
-    "Médio",
-    "Curto",
-    "Vira-lata",
+    'Luna',
+    'Banho e Tosa',
+    'Cachorro',
+    'Médio',
+    'Curto',
+    'Vira-lata',
     false,
-    "12h00"
+    '12h00'
   ),
   createData(
-    "Maggie",
-    "Banho e Tosa",
-    "Cachorro",
-    "Grande",
-    "Longo",
-    "Golden Retriever",
+    'Maggie',
+    'Banho e Tosa',
+    'Cachorro',
+    'Grande',
+    'Longo',
+    'Golden Retriever',
     true,
-    "09h00"
+    '09h00'
   ),
   createData(
-    "Mia",
-    "Banho e Tosa",
-    "Gato",
-    "Pequeno",
-    "Curto",
-    "Vira-lata",
+    'Mia',
+    'Banho e Tosa',
+    'Gato',
+    'Pequeno',
+    'Curto',
+    'Vira-lata',
     false,
-    "12h00"
+    '12h00'
   ),
   createData(
-    "Loki",
-    "Banho e Tosa",
-    "Cachorro",
-    "Médio",
-    "Curto",
-    "Vira-lata",
+    'Loki',
+    'Banho e Tosa',
+    'Cachorro',
+    'Médio',
+    'Curto',
+    'Vira-lata',
     false,
-    "12h00"
-  ),
+    '12h00'
+  )
 ];
 
 export default function BasicTable() {
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [page, setPage] = useState(0);
+
+  const handleRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
   return (
     <StyledTableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
         <TableHead>
           <TableRow>
             <TableCell align="left" className="table-head">
-              Name
+              Nome
             </TableCell>
             <TableCell align="left" className="table-head">
               Descrição
@@ -130,7 +143,7 @@ export default function BasicTable() {
           {rows.map((row) => (
             <TableRow
               key={row.name}
-              sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
             >
               <TableCell component="th" scope="row">
                 {row.name}
@@ -141,13 +154,22 @@ export default function BasicTable() {
               <TableCell align="left">{row.furSize}</TableCell>
               <TableCell align="left">{row.race}</TableCell>
               <TableCell align="left">
-                {!!row.furIsTangled ? "Sim" : "Não"}
+                {!!row.furIsTangled ? 'Sim' : 'Não'}
               </TableCell>
               <TableCell align="left">{row.time}</TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
+      <TablePagination
+        rowsPerPageOptions={[5, 10, 25]}
+        component="div"
+        count={rows.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleRowsPerPage}
+      />
     </StyledTableContainer>
   );
 }
