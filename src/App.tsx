@@ -4,8 +4,8 @@ import Form from './components/Form';
 import { Header, Container, Footer } from './styles';
 import { Instagram as InstagramIcon } from '@mui/icons-material';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
-import Table from './components/Table';
 import Home from './components/Home';
+import Appointments from './components/Appointments';
 
 const App = () => {
   return (
@@ -37,7 +37,7 @@ const App = () => {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/agendar" element={<Form />} />
-            <Route path="/agendamentos" element={<Table />} />
+            <Route path="/agendamentos" element={<Appointments />} />
           </Routes>
         </BrowserRouter>
         <Footer>Made by Rafael Lima &copy; - {new Date().getFullYear()}</Footer>
