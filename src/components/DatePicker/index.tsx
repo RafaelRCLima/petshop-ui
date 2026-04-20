@@ -13,10 +13,10 @@ export default function DatePickerComponent({ ...props }) {
       }[]
     | Date[];
 
-  const excludeDates: TExcludeDate = [
-    addDays(new Date(), 1),
-    addDays(new Date(), 5)
-  ];
+  // const excludeDates: TExcludeDate = [
+  //   addDays(new Date(), 1),
+  //   addDays(new Date(), 5)
+  // ];
 
   return (
     <DatePickerContainer>
@@ -26,7 +26,6 @@ export default function DatePickerComponent({ ...props }) {
         selected={props.selected}
         onChange={props.onChange}
         minDate={new Date()}
-        excludeDates={excludeDates}
         customInput={<TextField size="small" />}
       />
     </DatePickerContainer>

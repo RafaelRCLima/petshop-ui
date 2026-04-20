@@ -5,7 +5,8 @@ import DatePicker from '../DatePicker';
 import Input from '../Input';
 import Select from '../Select';
 import { SelectChangeEvent, Button } from '@mui/material';
-import 'react-datepicker/dist/react-datepicker.css';
+import { createAppointment } from '../../domain/appointments';
+import { set } from 'date-fns';
 
 const animalTypes = ['Cachorro', 'Gato'];
 const serviceTypes = [
@@ -14,7 +15,7 @@ const serviceTypes = [
   'Banho e tosa',
   'Banho e tosa higiênica'
 ];
-const furSizes = ['Pequeno', 'Médio', 'Grande'];
+const furSizes = ['Curto', 'Médio', 'Longo'];
 const animalSizes = ['Pequeno', 'Médio', 'Grande'];
 const times = [
   '08:00',
@@ -39,6 +40,8 @@ export default function Form() {
   const [race, setRace] = useState('');
   const [isTangled, setIsTangled] = useState(tangled[1]);
   const [date, setDate] = useState(new Date());
+  const [description, setDescription] = useState('');
+  const [startTime, setStartTime] = useState(new Date());
 
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newName = event.target.value;
@@ -73,6 +76,12 @@ export default function Form() {
   const handleTimeChange = (event: SelectChangeEvent) => {
     const newTime = event.target.value;
     setTime(newTime);
+
+    const formatedDate = set(date, {
+      hours: Number(newTime.split(':')[0]),
+      minutes: Number(newTime.split(':')[1])
+    });
+    setStartTime(formatedDate);
   };
 
   const handleFurIsTangledChange = (event: SelectChangeEvent) => {
@@ -80,8 +89,23 @@ export default function Form() {
     setIsTangled(newIsTangled);
   };
 
+  const handleDescriptionChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const newDescription = event.target.value;
+    setDescription(newDescription);
+  };
+
   const handleDateChange = (date: Date | null) => {
-    if (date) setDate(date);
+    if (date) {
+      setDate(date);
+
+      const formatedDate = set(date, {
+        hours: Number(time.split(':')[0]),
+        minutes: Number(time.split(':')[1])
+      });
+      setStartTime(formatedDate);
+    }
   };
 
   async function handleSubmit(event: React.FormEvent) {
@@ -94,11 +118,24 @@ export default function Form() {
       animalType,
       furSize,
       animalSize,
-      time,
+      startTime,
       race,
-      isTangled,
-      date
+      description,
+      isTangled
     );
+
+    await createAppointment({
+      name,
+      race,
+      service,
+      animalType,
+      furSize,
+      size: animalSize,
+      time,
+      description,
+      furIsTangled: isTangled === 'Sim',
+      startTime
+    });
   }
 
   return (
@@ -117,6 +154,13 @@ export default function Form() {
             inputId="race"
             value={race}
             onChange={handleRaceChange}
+            className="input-area"
+          />
+          <Input
+            inputLabel="Observações"
+            inputId="description"
+            value={description}
+            onChange={handleDescriptionChange}
             className="input-area"
           />
           <Select
@@ -153,8 +197,8 @@ export default function Form() {
           />
           <Select
             itemsList={tangled}
-            selectLabel="Tamanho do Pet"
-            selectId="animal-size"
+            selectLabel="Pelo emaranhado?"
+            selectId="is-tangled"
             value={isTangled}
             onChange={handleFurIsTangledChange}
             className="select-input"
