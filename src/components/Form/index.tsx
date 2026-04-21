@@ -7,6 +7,7 @@ import Select from '../Select';
 import { SelectChangeEvent, Button } from '@mui/material';
 import { createAppointment } from '../../domain/appointments';
 import { set } from 'date-fns';
+import Swal from 'sweetalert2';
 
 const animalTypes = ['Cachorro', 'Gato'];
 const serviceTypes = [
@@ -41,7 +42,6 @@ export default function Form() {
   const [isTangled, setIsTangled] = useState(tangled[1]);
   const [date, setDate] = useState(new Date());
   const [description, setDescription] = useState('');
-  const [startTime, setStartTime] = useState(new Date());
 
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newName = event.target.value;
@@ -76,12 +76,6 @@ export default function Form() {
   const handleTimeChange = (event: SelectChangeEvent) => {
     const newTime = event.target.value;
     setTime(newTime);
-
-    const formatedDate = set(date, {
-      hours: Number(newTime.split(':')[0]),
-      minutes: Number(newTime.split(':')[1])
-    });
-    setStartTime(formatedDate);
   };
 
   const handleFurIsTangledChange = (event: SelectChangeEvent) => {
@@ -97,45 +91,40 @@ export default function Form() {
   };
 
   const handleDateChange = (date: Date | null) => {
-    if (date) {
-      setDate(date);
-
-      const formatedDate = set(date, {
-        hours: Number(time.split(':')[0]),
-        minutes: Number(time.split(':')[1])
-      });
-      setStartTime(formatedDate);
-    }
+    if (date) setDate(date);
   };
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
-    console.log(
-      'Values: ',
-      name,
-      race,
-      service,
-      animalType,
-      furSize,
-      animalSize,
-      startTime,
-      race,
-      description,
-      isTangled
-    );
 
-    await createAppointment({
-      name,
-      race,
-      service,
-      animalType,
-      furSize,
-      size: animalSize,
-      time,
-      description,
-      furIsTangled: isTangled === 'Sim',
-      startTime
-    });
+    try {
+      const response = await createAppointment({
+        name,
+        race,
+        service,
+        animalType,
+        furSize,
+        size: animalSize,
+        description,
+        furIsTangled: isTangled === 'Sim',
+        startTime: set(date, {
+          hours: Number(time.split(':')[0]),
+          minutes: Number(time.split(':')[1])
+        })
+      });
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Agendamento realizado!',
+        text: 'O serviço para o seu pet foi agendado com sucesso.'
+      });
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Erro ao agendar',
+        text: 'Ocorreu um erro ao tentar agendar o serviço para o seu pet.'
+      });
+    }
   }
 
   return (
