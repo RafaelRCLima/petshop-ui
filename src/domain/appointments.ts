@@ -30,4 +30,9 @@ const createAppointment = async (appointment: any) => {
   return response.data;
 };
 
-export { createAppointment };
+const searchAppointments = async () => {
+  const response = await axios.get(`${url}/appointments`);
+  return response.data;
+};
+
+export { createAppointment, searchAppointments };
