@@ -2,7 +2,19 @@ import axios from 'axios';
 
 const url = process.env.REACT_APP_API_URL;
 
-const createAppointment = async (appointment: any) => {
+type AppointmentType = {
+  animalType: string;
+  description: string;
+  furIsTangled: boolean;
+  furSize: string;
+  name: string;
+  race: string;
+  size: string;
+  startTime: Date;
+  service: string;
+};
+
+const createAppointment = async (appointment: AppointmentType) => {
   const {
     animalType,
     description,
@@ -30,4 +42,13 @@ const createAppointment = async (appointment: any) => {
   return response.data;
 };
 
-export { createAppointment };
+const searchAppointments = async (query: any) => {
+  const { rowsPerPage, page } = query;
+
+  const response = await axios.get(
+    `${url}/appointments/${rowsPerPage}/${page}`
+  );
+  return response.data;
+};
+
+export { createAppointment, searchAppointments };

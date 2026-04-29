@@ -8,6 +8,7 @@ import { SelectChangeEvent, Button } from '@mui/material';
 import { createAppointment } from '../../domain/appointments';
 import { set } from 'date-fns';
 import Swal from 'sweetalert2';
+import { useSnackbar } from 'notistack';
 
 const animalTypes = ['Cachorro', 'Gato'];
 const serviceTypes = [
@@ -32,7 +33,9 @@ const times = [
 const tangled = ['Sim', 'Não'];
 
 export default function Form() {
+  const { enqueueSnackbar } = useSnackbar();
   const [name, setName] = useState('');
+  const [nameError, setNameError] = useState(false);
   const [service, setService] = useState(serviceTypes[0]);
   const [animalType, setAnimalType] = useState(animalTypes[0]);
   const [furSize, setFurSize] = useState(furSizes[0]);
@@ -45,6 +48,9 @@ export default function Form() {
 
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newName = event.target.value;
+
+    if (newName.length >= 3) setNameError(false);
+
     setName(newName);
   };
 
@@ -97,15 +103,28 @@ export default function Form() {
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
 
+    if (!name || name.length < 3) {
+      setNameError(true);
+      enqueueSnackbar(
+        name.length > 0
+          ? 'O nome deve conter ao menos 3 caracteres.'
+          : 'Por favor, informe o nome do seu Pet.',
+        {
+          variant: 'error'
+        }
+      );
+      return;
+    }
+
     try {
-      const response = await createAppointment({
+      await createAppointment({
         name,
-        race,
+        race: race || 'Não informada.',
         service,
         animalType,
         furSize,
         size: animalSize,
-        description,
+        description: description || 'Nenhuma observação.',
         furIsTangled: isTangled === 'Sim',
         startTime: set(date, {
           hours: Number(time.split(':')[0]),
@@ -137,6 +156,7 @@ export default function Form() {
             inputId="pet-name"
             onChange={handleNameChange}
             className="input-area"
+            error={nameError}
           />
           <Input
             inputLabel="Raça"
@@ -144,6 +164,8 @@ export default function Form() {
             value={race}
             onChange={handleRaceChange}
             className="input-area"
+            placeholder="(Ex.: Persa, Bulldog, Basset...)"
+            required={false}
           />
           <Input
             inputLabel="Observações"
@@ -151,6 +173,8 @@ export default function Form() {
             value={description}
             onChange={handleDescriptionChange}
             className="input-area"
+            placeholder="(Ex.: Não gosta que mexa na pata esquerda)"
+            required={false}
           />
           <Select
             itemsList={serviceTypes}
