@@ -9,7 +9,7 @@ import {
   Paper,
   TablePagination
 } from '@mui/material';
-import { format } from 'date-fns';
+import { format, set } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { searchAppointments } from '../../domain/appointments';
 
@@ -28,6 +28,7 @@ export default function BasicTable() {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(0);
   const [appointments, setAppointments] = useState<AppointmentType[]>([]);
+  const [totalAppointments, setTotalAppointments] = useState(0);
   const [loading, setLoading] = useState(true);
 
   const handleRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -40,16 +41,22 @@ export default function BasicTable() {
   };
 
   const loadAppointments = async () => {
-    const appointmentsFound = await searchAppointments();
+    const appointmentsFound = await searchAppointments({ rowsPerPage, page });
 
-    if (appointmentsFound.data.length) setAppointments(appointmentsFound.data);
-    setLoading(false);
+    console.log('aaaaaaa', appointmentsFound);
+
+    if (!!appointmentsFound.data.appointments) {
+      setAppointments(appointmentsFound.data.appointments);
+      setTotalAppointments(appointmentsFound.data.totalAppointments);
+
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     setLoading(true);
     loadAppointments();
-  }, []);
+  }, [page]);
 
   return loading ? (
     <p>Carregando...</p>
@@ -115,7 +122,7 @@ export default function BasicTable() {
       <TablePagination
         rowsPerPageOptions={[5, 10, 25]}
         component="div"
-        count={appointments.length}
+        count={totalAppointments} // LEMBRAR DE AJUSTAR ISSO PARA O TOTAL DE APPOINTMENTS DISPONÍVEIS NO BACKEND
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}
