@@ -1,5 +1,5 @@
-import React from "react";
-import { StyledTableContainer } from "./styles";
+import { useEffect, useState } from 'react';
+import { StyledTableContainer } from './styles';
 import {
   Table,
   TableBody,
@@ -7,101 +7,66 @@ import {
   TableHead,
   TableRow,
   Paper,
-} from "@mui/material";
+  TablePagination
+} from '@mui/material';
+import { format, set } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { searchAppointments } from '../../domain/appointments';
 
-function createData(
-  name: string,
-  description: string,
-  animalType: string,
-  size: string,
-  furSize: string,
-  race: string,
-  furIsTangled: Boolean,
-  time: string
-) {
-  return {
-    name,
-    description,
-    animalType,
-    size,
-    furSize,
-    race,
-    furIsTangled,
-    time,
-  };
-}
-
-const rows = [
-  createData(
-    "Amora",
-    "Banho e Tosa",
-    "Cachorro",
-    "Médio",
-    "Curto",
-    "Vira-lata",
-    false,
-    "12h00"
-  ),
-  createData(
-    "Nina",
-    "Banho e Tosa",
-    "Cachorro",
-    "Pequeno",
-    "Curto",
-    "Vira-lata",
-    false,
-    "12h00"
-  ),
-  createData(
-    "Luna",
-    "Banho e Tosa",
-    "Cachorro",
-    "Médio",
-    "Curto",
-    "Vira-lata",
-    false,
-    "12h00"
-  ),
-  createData(
-    "Maggie",
-    "Banho e Tosa",
-    "Cachorro",
-    "Grande",
-    "Longo",
-    "Golden Retriever",
-    true,
-    "09h00"
-  ),
-  createData(
-    "Mia",
-    "Banho e Tosa",
-    "Gato",
-    "Pequeno",
-    "Curto",
-    "Vira-lata",
-    false,
-    "12h00"
-  ),
-  createData(
-    "Loki",
-    "Banho e Tosa",
-    "Cachorro",
-    "Médio",
-    "Curto",
-    "Vira-lata",
-    false,
-    "12h00"
-  ),
-];
+type AppointmentType = {
+  name: string;
+  description: string;
+  animalType: string;
+  size: string;
+  furSize: string;
+  race: string;
+  furIsTangled: Boolean;
+  startTime: Date;
+};
 
 export default function BasicTable() {
-  return (
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [page, setPage] = useState(0);
+  const [appointments, setAppointments] = useState<AppointmentType[]>([]);
+  const [totalAppointments, setTotalAppointments] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  const handleRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const loadAppointments = async () => {
+    const appointmentsFound = await searchAppointments({ rowsPerPage, page });
+
+    console.log('aaaaaaa', appointmentsFound);
+
+    if (!!appointmentsFound.data.appointments) {
+      setAppointments(appointmentsFound.data.appointments);
+      setTotalAppointments(appointmentsFound.data.totalAppointments);
+
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    setLoading(true);
+    loadAppointments();
+  }, [page]);
+
+  return loading ? (
+    <p>Carregando...</p>
+  ) : (
     <StyledTableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
         <TableHead>
           <TableRow>
             <TableCell align="left" className="table-head">
-              Name
+              Nome
             </TableCell>
             <TableCell align="left" className="table-head">
               Descrição
@@ -127,10 +92,10 @@ export default function BasicTable() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row) => (
+          {appointments.map((row) => (
             <TableRow
               key={row.name}
-              sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
             >
               <TableCell component="th" scope="row">
                 {row.name}
@@ -141,13 +106,28 @@ export default function BasicTable() {
               <TableCell align="left">{row.furSize}</TableCell>
               <TableCell align="left">{row.race}</TableCell>
               <TableCell align="left">
-                {!!row.furIsTangled ? "Sim" : "Não"}
+                {!!row.furIsTangled ? 'Sim' : 'Não'}
               </TableCell>
-              <TableCell align="left">{row.time}</TableCell>
+              <TableCell align="left">
+                {row.startTime
+                  ? format(new Date(row.startTime), 'dd/MM/yyyy HH:mm', {
+                      locale: ptBR
+                    })
+                  : '-'}
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
+      <TablePagination
+        rowsPerPageOptions={[5, 10, 25]}
+        component="div"
+        count={totalAppointments} // LEMBRAR DE AJUSTAR ISSO PARA O TOTAL DE APPOINTMENTS DISPONÍVEIS NO BACKEND
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleRowsPerPage}
+      />
     </StyledTableContainer>
   );
 }
